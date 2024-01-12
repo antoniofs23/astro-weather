@@ -70,12 +70,26 @@ def ScrapeWeather(
 
     return currentWeather
 
-weatherInfo = str(ScrapeWeather()).split('class')
-cleanedInfo = []
-replaceTxt = ['"detail-item spaced-content"', '<div>', '</div>', '\n', '<div', '=']
-for line in range(len(weatherInfo)):
-    info = weatherInfo[line]
-    for txt in replaceTxt:
-        info = info.replace(txt, '')
-    cleanedInfo.append(info)
-    
+
+# will try to optimize this tomorrow to make faster with regular expressions
+# weatherInfo = str(ScrapeWeather()).split("class")
+weatherInfo = str(ScrapeWeather())
+
+# clean the scraped data using regular expressions
+# the "<.*?>" removes html tags
+patterns = ["<.*?>", "\n", "®", "°", "%", "™"]
+
+# to remove multiple patterns need to use the "|" or regex pipe
+cleanedInfo = re.sub("|".join(patterns), "", weatherInfo)
+
+# now we just want the numbers which we can get from regular expressions yet again
+mesurements = re.findall(r"\d+", cleanedInfo)
+
+# now lets define a dictionary with all the info we want
+MeasurementDict = {
+    "Max UV Index": mesurements[2],
+    "Dew Point": mesurements[7],
+    "Humidity": mesurements[5],
+    "Visibility": mesurements[11],
+    "Cloud Coverage": mesurements[10],
+}
