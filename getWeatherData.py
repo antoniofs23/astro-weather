@@ -7,6 +7,10 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+"""
+Define pop-up window that will collect link to be scraped
+"""
+
 
 # dialog-box for first time use only
 class MyWindow(Gtk.Window):
@@ -16,49 +20,43 @@ class MyWindow(Gtk.Window):
         self.box = Gtk.Box(spacing=6)
         self.add(self.box)
 
-        self.entry_city = Gtk.Entry()
-        self.entry_city.set_text("Enter city")
-        self.box.pack_start(self.entry_city, True, True, 0)
-
-        self.entry_zip_code = Gtk.Entry()
-        self.entry_zip_code.set_text("Enter zip-code")
-        self.box.pack_start(self.entry_zip_code, True, True, 0)
+        self.entry_link = Gtk.Entry()
+        self.entry_link.set_text("enter link here for accuweather")
+        self.box.pack_start(self.entry_link, True, True, 0)
 
         self.button1 = Gtk.Button(label="done")
         self.button1.connect("clicked", self.on_button1_clicked)
         self.box.pack_start(self.button1, True, True, 0)
 
     def on_button1_clicked(self, widget):
-        city = self.entry_city.get_text()
-        zip_code = self.entry_zip_code.get_text()
+        link = self.entry_link.get_text()
 
-        file = open("location-data.txt", "w")
-        file.write(city + "\n")
-        file.write(zip_code + "\n")
+        file = open("location-data-link.txt", "w")
+        file.write(link)
         Gtk.main_quit()
 
 
-# pop-up window for city and zip-code data if text-file does not exist
-if not exists("location-data.txt"):
-    win = MyWindow()
-    win.connect("destroy", Gtk.main_quit)
-    win.show_all()
-    Gtk.main()
+def pop_up_win():
+    # pop-up window for city and zip-code data if text-file does not exist
+    if not exists("location-data-link.txt"):
+        win = MyWindow()
+        win.connect("destroy", Gtk.main_quit)
+        win.show_all()
+        Gtk.main()
 
-with open("location-data.txt", "r") as f:
-    data = f.read()
+    with open("location-data-link.txt", "r") as f:
+        link_text = f.read()
 
-city, zipcode = data.split()
+    return link_text
+
+
+"""
+Scrape personal accuweather link with your city/zip-code
+"""
 
 
 # scrape weather data
-def ScrapeWeather(
-    target_url="https://www.accuweather.com/en/us/"
-    + city
-    + "/"
-    + zipcode
-    + "/current-weather/337544",
-):
+def ScrapeWeather(target_url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
     }
@@ -66,30 +64,23 @@ def ScrapeWeather(
     resp = requests.get(target_url, headers=headers).text
     soup = BeautifulSoup(resp, "html.parser")
 
-    currentWeather = soup.find_all("div", {"class": "current-weather-details"})
+    weatherInfo = soup.find_all("div", {"class": "current-weather-details"})
 
-    return currentWeather
+    # clean the scraped data using regular expressions
+    # the "<.*?>" removes html tags
+    patterns = ["<.*?>", "\n", "®", "°", "%", "™"]
 
+    # to remove multiple patterns need to use the "|" or regex pipe
+    cleanedInfo = re.sub("|".join(patterns), "", str(weatherInfo))
 
-# will try to optimize this tomorrow to make faster with regular expressions
-# weatherInfo = str(ScrapeWeather()).split("class")
-weatherInfo = str(ScrapeWeather())
+    # now we just want the numbers which we can get from regular expressions yet again
+    mesurements = re.findall(r"\d+", cleanedInfo)
+    # now lets define a dictionary with all the info we want
+    MeasurementDict = {
+        "Dew Point": mesurements[5],
+        "Humidity": mesurements[3],
+        "Visibility": mesurements[9],
+        "Cloud Coverage": mesurements[8],
+    }
 
-# clean the scraped data using regular expressions
-# the "<.*?>" removes html tags
-patterns = ["<.*?>", "\n", "®", "°", "%", "™"]
-
-# to remove multiple patterns need to use the "|" or regex pipe
-cleanedInfo = re.sub("|".join(patterns), "", weatherInfo)
-
-# now we just want the numbers which we can get from regular expressions yet again
-mesurements = re.findall(r"\d+", cleanedInfo)
-
-# now lets define a dictionary with all the info we want
-MeasurementDict = {
-    "Max UV Index": mesurements[2],
-    "Dew Point": mesurements[7],
-    "Humidity": mesurements[5],
-    "Visibility": mesurements[11],
-    "Cloud Coverage": mesurements[10],
-}
+    return MeasurementDict
