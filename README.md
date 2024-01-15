@@ -13,8 +13,7 @@ Scrapes accuweather data for info not normally found on your weather app such as
 
 1. clone this repo to your home directory via:
     `git clone https://github.com/antoniofs23/cloud-coverage.git`
-2. In app directory run the `INSTALL.sh` file
-3. - **before running need to make the file executable via `chmod +x INSTALL.sh`**
+2. In app directory run the `INSTALL.sh` file (first make it executable via `chmod +x INSTALL.sh`)
    
 >
 >[!IMPORTANT]
