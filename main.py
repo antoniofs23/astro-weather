@@ -1,10 +1,8 @@
 import getWeatherData as gwd
 from threading import Thread
-from collections import OrderedDict
 import signal
 import gi
 import os
-import subprocess
 import time
 
 gi.require_version("Gtk", "3.0")
