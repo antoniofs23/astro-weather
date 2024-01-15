@@ -15,7 +15,7 @@ Scrapes accuweather data for info not normally found on your weather app such as
     `git clone https://github.com/antoniofs23/cloud-coverage.git`
 2. In app directory run the `INSTALL.sh` file
 >
->[!ALERT]
+>[!IMPORTANT]
 >*the install file assumes python is already installed (which it normally is)* if not python3 is required prior to running `INSTALL.sh`. To quickly check if python is installed run `python -V` in your terminal
 
 ## running the app
