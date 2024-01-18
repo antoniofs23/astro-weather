@@ -1,2 +1,5 @@
 beautifulsoup4==4.11.2
+emoji==2.9.0
+pyephem==9.99
+PyGObject==3.46.0
 Requests==2.31.0
