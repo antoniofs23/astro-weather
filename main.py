@@ -1,9 +1,11 @@
-import getWeatherData as gwd
+from getWeatherData import *
+from getMoonPhase import *
 from threading import Thread
 import signal
 import gi
 import os
 import time
+from datetime import datetime
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("AppIndicator3", "0.1")
@@ -15,7 +17,7 @@ dirname = os.path.dirname(abspath)
 os.chdir(dirname)
 
 # see if link text exists
-target_url = gwd.pop_up_win()
+target_url = pop_up_win()
 
 
 class Indicator:
@@ -36,15 +38,25 @@ class Indicator:
     def create_menu(self):
         menu = Gtk.Menu()
 
-        weather_data = gwd.ScrapeWeather(target_url)
+        # get moon data
+        moon_phase, nnm = get_moon_phase()
+        item_moon = Gtk.MenuItem("current moon: " + moon_phase)
+        item_nnm = Gtk.MenuItem("next new moon: " + nnm)
+        menu.append(item_moon)
+        menu.append(item_nnm)
+
+        # add a separator
+        menu_sep = Gtk.SeparatorMenuItem()
+        menu.append(menu_sep)
+
+        weather_data = ScrapeWeather(target_url)
         label = list(weather_data.keys())
         values = list(weather_data.values())
         units = ["°F", "%", " mi", "%"]
 
-        # add devices + battery%s
         for num in range(len(label)):
-            item_model = Gtk.MenuItem(label[num] + ": " + values[num] + units[num])
-            menu.append(item_model)
+            item_data = Gtk.MenuItem(label[num] + ": " + values[num] + units[num])
+            menu.append(item_data)
 
         # add a separator between weather data and reload button
         menu_sep = Gtk.SeparatorMenuItem()
