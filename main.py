@@ -39,9 +39,9 @@ class Indicator:
         menu = Gtk.Menu()
 
         # get moon data
-        moon_phase, nnm = get_moon_phase()
-        item_moon = Gtk.MenuItem("current moon: " + moon_phase)
-        item_nnm = Gtk.MenuItem("next new moon: " + nnm)
+        moon_phase,nnm = get_moon_phase()
+        item_moon = Gtk.MenuItem("current moon:   " + moon_phase)
+        item_nnm = Gtk.MenuItem("next new moon: " + str(nnm)[5:8])
         menu.append(item_moon)
         menu.append(item_nnm)
 
