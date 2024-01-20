@@ -76,11 +76,20 @@ def ScrapeWeather(target_url):
     # now we just want the numbers which we can get from regular expressions yet again
     mesurements = re.findall(r"\d+", cleanedInfo)
     # now lets define a dictionary with all the info we want
-    MeasurementDict = {
-        "Dew Point": mesurements[7],
-        "Humidity": mesurements[5],
-        "Visibility": mesurements[11],
-        "Cloud Coverage": mesurements[10],
-    }
+    try:
+        MeasurementDict = {
+            "Dew Point": mesurements[7],
+            "Humidity": mesurements[5],
+            "Visibility": mesurements[11],
+            "Cloud Coverage": mesurements[10]
+        }
+    except IndexError:
+        MeasurementDict = {
+            "Dew Point": mesurements[5],
+            "Humidity": mesurements[3],
+            "Visibility": mesurements[9],
+            "Cloud Coverage": mesurements[8]
+        }
+        
 
     return MeasurementDict
