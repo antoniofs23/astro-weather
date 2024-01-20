@@ -6,7 +6,7 @@
 
 # Start Install
 # 1. Create a terminal alias in .bashrc
-echo "alias cloud-coverage='python3 ~/cloud-coverage/main.py &'" >> ~/.bashrc
+echo "alias astro-weather='python3 ~/astro-weather/main.py &'" >> ~/.bashrc
 
 # 2. Install python dependencies
 pip install -r requirements.txt
@@ -17,16 +17,16 @@ sudo apt install libgirepository1.0-dev
 name=$(whoami)
 #build the .desktop file
 cd ~/.config/autostart/
-cat <<EOT >> cloud-coverage.desktop
+cat <<EOT >> astro-weather.desktop
 [Desktop Entry]
 Type=Application
-Path=/home/$name/cloud-coverage/
+Path=/home/$name/astro-weather/
 Exec=python3 main.py
 Terminal=false
 Icon=htop
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
-Name[en_US]=cloud-coverage
-Comment[en_US]=runs cloud-coverage
+Name[en_US]=astro-weather
+Comment[en_US]=runs astro-weather
 EOT
